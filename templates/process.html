@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loan Prediction</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .form-style-9 {
+            max-width: 450px;
+            background: #FAFAFA;
+            padding: 30px;
+            margin: 50px auto;
+            box-shadow: 1px 1px 25px rgba(0, 0, 0, 0.35);
+            border-radius: 10px;
+            border: 6px solid #305A72;
+        }
+
+        .form-style-9 ul {
+            padding: 0;
+            margin: 0;
+            list-style: none;
+        }
+
+        .form-style-9 ul li {
+            display: block;
+            margin-bottom: 10px;
+            min-height: 35px;
+        }
+
+        .form-style-9 ul li input {
+            padding: 8px;
+            border: 1px solid #B0CFE0;
+            transition: all 0.30s ease-in-out;
+            width: 100%;
+        }
+
+        .form-style-9 ul li input:focus {
+            box-shadow: 0 0 5px #B0CFE0;
+            border: 1px solid #B0CFE0;
+        }
+
+        .form-style-9 ul li input[type="submit"] {
+            background-color: #216288;
+            color: #FFFFFF;
+            cursor: pointer;
+            border: none;
+            transition: background 0.3s;
+        }
+
+        .form-style-9 ul li input[type="submit"]:hover {
+            background-color: #28739E;
+        }
+
+        #result {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .result-container {
+            border: 2px solid #305A72;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 1px 1px 15px rgba(0, 0, 0, 0.2);
+            background-color: #F9F9F9;
+            display: inline-block;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <ul class="nav-list">
+            <li class="nav-item"><a href="#">Home</a></li>
+            <li class="nav-item"><a href="process.html">Process</a></li>
+            <li class="nav-item"><a href="index.html">Information</a></li>
+            <li class="nav-item"><a href="#">About Me</a></li>
+        </ul>
+    </nav>
+
+    <section class="information">
+        <div class="container">
+            <h2 style="text-align:center">LOCAL INTERPRETATION</h2>    
+        </div>
+
+        <form id="inputForm" class="form-style-9">
+            <ul>
+                <li>
+                    <input type="number" name="index" id="numberInput" placeholder="Enter Observation Index" required />
+                </li>
+                <li>
+                    <input type="submit" value="Calculate" />
+                </li>
+            </ul>
+        </form>
+
+        <div id="result"></div>
+    </section>
+
+    <script>
+        function selectRandomPerson() {
+            let randomNum = Math.floor(Math.random() * 542) + 1; 
+            document.getElementById('randomPerson').value = randomNum; 
+        }
+
+        document.getElementById('inputForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+
+            
+            const index = document.getElementById('numberInput').value;
+
+            let requestData;
+
+            if (index) {
+                requestData = {
+                    randomPerson: null,
+                    data: { index: parseInt(index) },  
+                    index: parseInt(index)
+                };
+            } else {
+                document.getElementById('result').innerText = "Lütfen bir alan doldurun.";
+                return;
+            }
+
+            const response = await fetch('http://127.0.0.1:5000/predict', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(requestData)
+            });
+
+            const result = await response.json();
+            document.getElementById('result').innerHTML = `
+                <div class="result-container">
+                    <p><strong>Prediction:</strong> ${result.prediction}</p>
+                    <p><strong>Interpretation:</strong> ${result.interpretation}</p>
+                    <img src="${result.plot_url}" alt="Grafik" />
+                </div>
+            `;
+        });
+    </script>
+</body>
+</html>
