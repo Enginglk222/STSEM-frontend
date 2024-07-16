@@ -1,0 +1,8 @@
+Flask
+pandas
+shap
+scikit-learn
+imbalanced-learn
+matplotlib
+openai
+flask-cors
